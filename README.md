@@ -1,6 +1,10 @@
 # 🎮 Artisan Open-World Prototype: GTA 6 (Three.js Engine)
 
-> **Bounty Target**: [make.fun/bounty/gta6-01](https://make.fun/bounty/gta6-01)
+[![make.fun bounty](https://make.fun/badge/news-image-20261124.svg)](https://make.fun/bounty/news-image-20261124)
+[![make.fun rank](https://make.fun/badge/news-image-20261124/jubingx-gif/makefun-gta6-artisan-20261124/rank.svg)](https://make.fun/bounty/news-image-20261124)
+[![make.fun reward](https://make.fun/badge/news-image-20261124/jubingx-gif/makefun-gta6-artisan-20261124/reward.svg)](https://make.fun/bounty/news-image-20261124)
+
+> **Bounty Target**: [make.fun/bounty/news-image-20261124](https://make.fun/bounty/news-image-20261124)
 > **Version**: 20261124-Alpha
 > **Artisan**: jubingx-gif & Artisan Assistant
 
