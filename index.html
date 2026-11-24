@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orange GTA 6 - Artisan Edition</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; font-family: 'Courier New', Courier, monospace; }
+        #ui { position: absolute; top: 20px; left: 20px; color: #0f0; text-shadow: 2px 2px #000; pointer-events: none; }
+        #crosshair { position: absolute; top: 50%; left: 50%; width: 20px; height: 20px; border: 2px solid #0f0; transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none; }
+        .stat { font-size: 24px; margin-bottom: 10px; }
+        #loading { position: absolute; width: 100%; height: 100%; background: #000; color: #fff; display: flex; align-items: center; justify-content: center; z-index: 100; }
+    </style>
+</head>
+<body>
+    <div id="loading">LOADING ORANGE GTA 6...</div>
+    <div id="ui">
+        <div class="stat">WANTED: ⭐⭐⭐</div>
+        <div class="stat">CASH: $1,666</div>
+        <div class="stat">MISSION: ESCAPE THE CITY</div>
+    </div>
+    <div id="crosshair"></div>
+
+    <!-- Three.js from CDN for zero-install compliance -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
+
+        // --- SETUP ---
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x87ceeb); // Sky blue
+        scene.fog = new THREE.FogExp2(0x87ceeb, 0.002);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        document.body.appendChild(renderer.domElement);
+
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(100, 100, 50);
+        light.castShadow = true;
+        scene.add(light);
+        scene.add(new THREE.AmbientLight(0x404040));
+
+        // --- WORLD GENERATION ---
+        // Ground
+        const groundGeo = new THREE.PlaneGeometry(2000, 2000);
+        const groundMat = new THREE.MeshPhongMaterial({ color: 0x333333 });
+        const ground = new THREE.Mesh(groundGeo, groundMat);
+        ground.rotation.x = -Math.PI / 2;
+        ground.receiveShadow = true;
+        scene.add(ground);
+
+        // Simple City (Procedural Buildings)
+        const buildings = [];
+        for (let i = 0; i < 200; i++) {
+            const h = 10 + Math.random() * 50;
+            const w = 5 + Math.random() * 10;
+            const geo = new THREE.BoxGeometry(w, h, w);
+            const mat = new THREE.MeshPhongMaterial({ color: Math.random() * 0xffffff });
+            const b = new THREE.Mesh(geo, mat);
+            b.position.x = (Math.random() - 0.5) * 400;
+            b.position.z = (Math.random() - 0.5) * 400;
+            b.position.y = h / 2;
+            b.castShadow = true;
+            b.receiveShadow = true;
+            scene.add(b);
+            buildings.push(b);
+        }
+
+        // --- PLAYER CONTROLS ---
+        const controls = new PointerLockControls(camera, document.body);
+        document.addEventListener('click', () => controls.lock());
+        scene.add(controls.getObject());
+        controls.getObject().position.y = 2;
+
+        const move = { f: false, b: false, l: false, r: false };
+        const onKeyDown = (e) => {
+            switch(e.code) {
+                case 'KeyW': move.f = true; break;
+                case 'KeyS': move.b = true; break;
+                case 'KeyA': move.l = true; break;
+                case 'KeyD': move.r = true; break;
+            }
+        };
+        const onKeyUp = (e) => {
+            switch(e.code) {
+                case 'KeyW': move.f = false; break;
+                case 'KeyS': move.b = false; break;
+                case 'KeyA': move.l = false; break;
+                case 'KeyD': move.r = false; break;
+            }
+        };
+        document.addEventListener('keydown', onKeyDown);
+        document.addEventListener('keyup', onKeyUp);
+
+        // --- ANIMATION LOOP ---
+        const velocity = new THREE.Vector3();
+        const direction = new THREE.Vector3();
+        let prevTime = performance.now();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const time = performance.now();
+            const delta = (time - prevTime) / 1000;
+
+            if (controls.isLocked) {
+                velocity.x -= velocity.x * 10.0 * delta;
+                velocity.z -= velocity.z * 10.0 * delta;
+
+                direction.z = Number(move.f) - Number(move.b);
+                direction.x = Number(move.r) - Number(move.l);
+                direction.normalize();
+
+                if (move.f || move.b) velocity.z -= direction.z * 400.0 * delta;
+                if (move.l || move.r) velocity.x -= direction.x * 400.0 * delta;
+
+                controls.moveRight(-velocity.x * delta);
+                controls.moveForward(-velocity.z * delta);
+            }
+
+            renderer.render(scene, camera);
+            prevTime = time;
+        }
+
+        document.getElementById('loading').style.display = 'none';
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

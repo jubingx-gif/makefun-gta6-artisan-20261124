@@ -1,0 +1,13 @@
+{
+  "name": "orange-gta6-artisan",
+  "version": "1.0.0",
+  "description": "Open-world crime game prototype for make.fun bounty",
+  "main": "main.ts",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "typescript": "^5.0.0"
+  }
+}
